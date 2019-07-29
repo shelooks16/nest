@@ -7,7 +7,7 @@ const typeOrmConfig: TypeOrmModuleOptions = {
   username: 'admin',
   password: '123',
   database: 'admin',
-  entities: [__dirname + '../**/*.entity.{ts,js}'],
+  entities: [__dirname + '/../**/*.entity.{ts,js}'],
   synchronize: true
 };
 
