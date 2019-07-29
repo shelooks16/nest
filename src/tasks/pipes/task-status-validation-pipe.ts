@@ -3,7 +3,7 @@ import {
   ArgumentMetadata,
   BadRequestException
 } from '@nestjs/common';
-import { TaskStatus } from '../task-status.enum';
+import { TaskStatus } from '../types/task-status.enum';
 
 export class TaskStatusValidationPipe implements PipeTransform<any> {
   readonly allowedStatuses = [
