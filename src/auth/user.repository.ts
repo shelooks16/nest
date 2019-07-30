@@ -12,13 +12,11 @@ import { SignInDto } from './dto/sign-in-dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async signUp(signUpDto: SignUpDto): Promise<User> {
+  async signUp(signUpDto: SignUpDto): Promise<string> {
     const { username, password } = signUpDto;
 
-    let newUser;
-
     try {
-      newUser = await this.save({
+      await this.save({
         username,
         password: await bcrypt.hash(password, 10)
       });
@@ -26,10 +24,11 @@ export class UserRepository extends Repository<User> {
       if (error.code === ErrorCodes.duplicate) {
         throw new ConflictException('Username already exists');
       } else {
-        throw new InternalServerErrorException();
+        throw new InternalServerErrorException(error.message);
       }
     }
-    return newUser;
+
+    return username;
   }
 
   async validateUser(signInDto: SignInDto): Promise<string> {

@@ -13,13 +13,13 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 20 })
+  @Column()
   username: string;
 
   @Column('text')
   password: string;
 
-  async isPasswordMatches(password): Promise<boolean> {
+  async isPasswordMatches(password: string): Promise<boolean> {
     return await bcrypt.compare(password, this.password);
   }
 }
