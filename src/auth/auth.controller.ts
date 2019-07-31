@@ -37,12 +37,8 @@ export class AuthController {
   @Get('/google/callback')
   @UseGuards(AuthGuard('google'))
   async signInGoogleCallback(@GetUser() user, @Res() res) {
+    // TODO: figure out how to send back to the client
     const { accessToken } = user;
     res.redirect('/');
-  }
-
-  @Get('/google/success')
-  signInSuccess() {
-    return { msg: 'Success' };
   }
 }
