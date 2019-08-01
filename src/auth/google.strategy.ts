@@ -1,13 +1,18 @@
+import { UserRepository } from './user.repository';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-google-oauth20';
 import { Injectable } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in-dto';
 import { google } from '../config';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    @InjectRepository(UserRepository) private userRepository: UserRepository
+  ) {
     super({
       clientID: google.clientId,
       clientSecret: google.clientSecret,
@@ -23,20 +28,17 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     cb
   ) {
     try {
-      const userProfile: SignInDto = {
+      const signInDto: SignInDto = {
         username: profile.id,
         password: profile.id
       };
 
-      const {
-        accessToken
-      }: { accessToken: string } = await this.authService.signInWithOAuth(
-        userProfile
-      );
+      let username = await this.userRepository.validateUser(signInDto);
+      if (!username) {
+        username = await this.authService.signUp(signInDto);
+      }
 
-      const user = { accessToken };
-
-      cb(null, user);
+      cb(null, username);
     } catch (err) {
       cb(err, null);
     }
