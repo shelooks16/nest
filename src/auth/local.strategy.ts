@@ -13,12 +13,20 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     super();
   }
 
-  async validate(username: string, password: string): Promise<string> {
+  async validate(
+    username: string,
+    password: string
+  ): Promise<{ username: string }> {
     const signInDto: SignInDto = { username, password };
-    const validUsername = await this.userRepository.validateUser(signInDto);
+    const validUsername: string = await this.userRepository.validateUser(
+      signInDto
+    );
     if (!validUsername) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return validUsername;
+
+    return {
+      username: validUsername
+    };
   }
 }
