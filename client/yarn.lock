@@ -4278,6 +4278,11 @@ react-dom@^16.8.1:
     prop-types "^15.6.2"
     scheduler "^0.13.6"
 
+react-github-login@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-github-login/-/react-github-login-1.0.3.tgz#e3fdc29c1162ecc0704d9fe6096c69d6f53315e7"
+  integrity sha1-4/3CnBFi7MBwTZ/mCWxp1vUzFec=
+
 react-google-login@^5.0.4:
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/react-google-login/-/react-google-login-5.0.4.tgz#fa96ff374480d1c2b2b279310959754d5957cadb"

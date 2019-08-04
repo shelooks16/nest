@@ -1,3 +1,4 @@
+import { GithubAuthGuard } from './github-auth.guard';
 import {
   Controller,
   Post,
@@ -31,6 +32,14 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   @Get('/google')
   signInGoogle(
+    @GetUser('username') username: string
+  ): Promise<{ accessToken: string }> {
+    return this.authService.signIn(username);
+  }
+
+  @UseGuards(GithubAuthGuard)
+  @Get('/github')
+  signInGithub(
     @GetUser('username') username: string
   ): Promise<{ accessToken: string }> {
     return this.authService.signIn(username);

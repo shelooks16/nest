@@ -1,9 +1,14 @@
 import React, { useState, Fragment } from 'react';
 import { GoogleLogin } from 'react-google-login';
+import GitHubLogin from 'react-github-login';
 
 const googleOptions = {
   clientId:
     '982707529359-i7rjj0jbebe4snq6og83tsdqi01sltss.apps.googleusercontent.com'
+};
+
+const githubOptions = {
+  clientId: 'b16988728d900ad6b92b'
 };
 
 const Main = () => {
@@ -11,7 +16,21 @@ const Main = () => {
   const [newTask, setNewTask] = useState(null);
   const [tasks, setTasks] = useState([]);
 
-  const onAuthenticated = async (resp) => {
+  const onGithubAuth = async (authResp) => {
+    const tempCode = authResp.code;
+    const resp = await fetch(
+      `http://localhost:3001/auth/github?code=${tempCode}`
+    );
+    const data = await resp.json();
+    console.log(data);
+    setJwtToken(data.accessToken);
+
+    // just set default
+    setTasks([]);
+    setNewTask(null);
+  };
+
+  const onGoogleAuth = async (resp) => {
     const { accessToken, error } = resp;
     if (error) {
       console.log(error);
@@ -21,7 +40,12 @@ const Main = () => {
       `http://localhost:3001/auth/google?access_token=${accessToken}`
     );
     const data = await respoFromServer.json();
+    console.log(data);
     setJwtToken(data.accessToken);
+
+    // just set default
+    setTasks([]);
+    setNewTask(null);
   };
 
   const createNewTask = async (e) => {
@@ -61,9 +85,18 @@ const Main = () => {
       <GoogleLogin
         clientId={googleOptions.clientId}
         buttonText="Continue with Google"
-        onSuccess={onAuthenticated}
-        onFailure={onAuthenticated}
+        onSuccess={onGoogleAuth}
+        onFailure={onGoogleAuth}
         cookiePolicy={'single_host_origin'}
+      />
+      <GitHubLogin
+        clientId={githubOptions.clientId}
+        buttonText="Continue with Github"
+        redirectUri=""
+        onSuccess={onGithubAuth}
+        onFailure={onGithubAuth}
+        scope="read:user"
+        className="github-button"
       />
       {jwtToken ? (
         <Fragment>
