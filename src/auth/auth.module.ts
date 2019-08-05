@@ -1,5 +1,5 @@
 import { LocalStrategy } from './local.strategy';
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -17,7 +17,8 @@ import { jwt as jwtConfig } from '../config';
       secret: jwtConfig.secret,
       signOptions: { expiresIn: jwtConfig.expiresIn }
     }),
-    PassportModule.register({ defaultStrategy: 'jwt' })
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    HttpModule
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, GoogleStrategy, LocalStrategy],

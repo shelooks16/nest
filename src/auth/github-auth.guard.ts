@@ -6,15 +6,16 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException
+  UnauthorizedException,
+  HttpService
 } from '@nestjs/common';
 import { SignInDto } from './dto/sign-in-dto';
-import axios from 'axios';
 
 @Injectable()
 export class GithubAuthGuard implements CanActivate {
   constructor(
     private authService: AuthService,
+    private httpService: HttpService,
     @InjectRepository(UserRepository) private userRepository: UserRepository
   ) {}
 
@@ -26,22 +27,25 @@ export class GithubAuthGuard implements CanActivate {
     }
 
     try {
-      const loginResp = await axios.post(
-        'https://github.com/login/oauth/access_token',
-        {
+      const accessTokenResp = await this.httpService
+        .post('https://github.com/login/oauth/access_token', {
           client_id: github.clientId,
           client_secret: github.clientSecret,
           code
-        }
-      );
+        })
+        .toPromise();
 
-      const accessToken = loginResp.data.split('access_token=')[1].slice(0, 40);
+      const accessToken: string = accessTokenResp.data
+        .split('access_token=')[1]
+        .slice(0, 40);
 
-      const apiResp = await axios.get(`https://api.github.com/user`, {
-        headers: {
-          Authorization: `token ${accessToken}`
-        }
-      });
+      const apiResp = await this.httpService
+        .get(`https://api.github.com/user`, {
+          headers: {
+            Authorization: `token ${accessToken}`
+          }
+        })
+        .toPromise();
 
       const signInDto: SignInDto = {
         username: apiResp.data.login,
